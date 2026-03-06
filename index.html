@@ -3,183 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>星雲娛樂城 - iOS VIP</title>
+    <title>星雲遊戲館</title>
     <style>
         :root {
             --gold: #fccd4d;
-            --gold-gradient: linear-gradient(135deg, #fceabb 0%, #fccd4d 50%, #f8b500 100%);
-            --ios-bg: #0a0a0a;
-            --glass: rgba(255, 255, 255, 0.08);
+            --bg-color: #000000;
+            --card-bg: #1a1a1a;
+            --text-gray: #999;
             --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
         }
 
         body {
             margin: 0;
-            background-color: var(--ios-bg);
-            font-family: -apple-system, system-ui, sans-serif;
+            background-color: var(--bg-color);
+            font-family: -apple-system, sans-serif;
             color: white;
-            padding-top: var(--safe-top);
         }
 
-        /* 頂部導航欄 */
+        /* --- 頂部導航 --- */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 15px;
-            height: 44px;
+            padding: calc(var(--safe-top) + 10px) 20px 10px;
+            background: #000;
             position: sticky;
-            top: var(--safe-top);
-            background: var(--ios-bg);
+            top: 0;
             z-index: 100;
         }
 
-        .nav-icon { font-size: 24px; cursor: pointer; width: 60px; }
-        
-        .logo {
-            flex-grow: 1;
-            text-align: center;
-            font-weight: 800;
-            font-size: 20px;
-            background: var(--gold-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
-        }
+        .menu-btn { font-size: 24px; color: var(--gold); }
+        .logo { font-size: 20px; font-weight: bold; color: var(--gold); letter-spacing: 1px; }
+        .login-btn { background: var(--gold); color: #000; border: none; padding: 6px 18px; border-radius: 20px; font-weight: bold; }
 
-        .login-btn {
-            background: var(--gold-gradient);
-            color: #000;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 13px;
-            font-weight: bold;
-            width: 60px;
-        }
-
-        /* 遊戲分類水平滾動 */
-        .category-bar {
-            display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding: 10px 15px;
-            gap: 10px;
-            scrollbar-width: none; /* Firefox */
-        }
-        .category-bar::-webkit-scrollbar { display: none; } /* Chrome/Safari */
-
-        .cat-item {
-            padding: 8px 18px;
-            background: var(--glass);
-            border-radius: 20px;
-            font-size: 14px;
-            border: 0.5px solid rgba(255,255,255,0.1);
-        }
-        .cat-item.active {
-            background: var(--gold-gradient);
-            color: #000;
-            font-weight: bold;
-        }
-
-        /* 遊戲卡片區域 */
+        /* --- 遊戲卡片區域 --- */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 15px;
             padding: 15px;
-            padding-bottom: calc(80px + var(--safe-bottom));
         }
 
         .game-card {
-            aspect-ratio: 1.1 / 1;
-            background: var(--glass);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            transition: transform 0.1s;
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 0.5px solid #333;
+            transition: transform 0.2s;
         }
 
-        .game-card:active { transform: scale(0.95); }
+        .game-card:active { transform: scale(0.96); }
 
-        .game-card .icon-box {
-            font-size: 40px;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 0 5px rgba(252, 205, 77, 0.5));
-        }
-
-        .game-card span { font-size: 14px; font-weight: 500; }
-
-        /* 底部導航 */
-        .tab-bar {
-            position: fixed;
-            bottom: 0;
+        /* 遊戲圖片佔位 */
+        .game-img {
             width: 100%;
-            height: calc(55px + var(--safe-bottom));
-            background: rgba(15, 15, 15, 0.9);
-            backdrop-filter: blur(15px);
-            display: flex;
-            justify-content: space-around;
-            padding-top: 10px;
-            border-top: 0.5px solid rgba(255,255,255,0.1);
+            aspect-ratio: 1 / 1;
+            background: #333; /* 實際使用時替換為 background-image */
+            background-size: cover;
+            background-position: center;
         }
+
+        .game-info {
+            padding: 12px 10px;
+            text-align: center;
+        }
+
+        .game-title {
+            color: var(--gold);
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .game-desc {
+            color: var(--text-gray);
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* --- 側邊欄 --- */
+        .sidebar {
+            position: fixed;
+            top: 0; left: -280px;
+            width: 260px; height: 100%;
+            background: #111; z-index: 200;
+            transition: 0.3s;
+            padding-top: 60px;
+        }
+        .sidebar.open { left: 0; }
+        .sidebar li { padding: 15px 25px; border-bottom: 1px solid #222; color: #ccc; list-style: none; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 150; }
     </style>
 </head>
 <body>
 
+    <div class="overlay" id="overlay"></div>
+    
+    <nav class="sidebar" id="sidebar">
+        <ul>
+            <li>全部</li><li>棋牌</li><li>老虎機</li><li>捕魚機</li><li>限定</li><li>LIVE</li>
+        </ul>
+    </nav>
+
     <header class="navbar">
-        <div class="nav-icon">☰</div>
-        <div class="logo">星雲娛樂城</div>
+        <div class="menu-btn" id="openMenu">☰</div>
+        <div class="logo">星雲遊戲館</div>
         <button class="login-btn">登入</button>
     </header>
 
-    <div class="category-bar">
-        <div class="cat-item active">全部</div>
-        <div class="cat-item">棋牌</div>
-        <div class="cat-item">老虎機</div>
-        <div class="cat-item">捕魚機</div>
-        <div class="cat-item">限定</div>
-        <div class="cat-item">LIVE</div>
-    </div>
-
     <main class="game-grid">
         <div class="game-card">
-            <div class="icon-box">♠️</div>
-            <span>21點</span>
+            <div class="game-img" style="background-image: url('https://via.placeholder.com/200x200/222/gold?text=21Point');"></div>
+            <div class="game-info">
+                <span class="game-title">尊爵 21 點</span>
+                <span class="game-desc">高額獎池，挑戰莊家極限</span>
+            </div>
         </div>
+
         <div class="game-card">
-            <div class="icon-box">🏎️</div>
-            <span>北京賽車</span>
+            <div class="game-img" style="background-image: url('https://via.placeholder.com/200x200/222/gold?text=Poker');"></div>
+            <div class="game-info">
+                <span class="game-title">德州撲克</span>
+                <span class="game-desc">全球玩家對戰，贏取籌碼</span>
+            </div>
         </div>
+
         <div class="game-card">
-            <div class="icon-box">🃏</div>
-            <span>德州撲克</span>
+            <div class="game-img" style="background-image: url('https://via.placeholder.com/200x200/222/gold?text=Dice');"></div>
+            <div class="game-info">
+                <span class="game-title">急速推筒子</span>
+                <span class="game-desc">傳統藝術與財富的交響樂</span>
+            </div>
         </div>
+
         <div class="game-card">
-            <div class="icon-box">🎲</div>
-            <span>推筒子</span>
-        </div>
-        <div class="game-card">
-            <div class="icon-box">💰</div>
-            <span>百家樂</span>
-        </div>
-        <div class="game-card">
-            <div class="icon-box">🐉</div>
-            <span>射龍門</span>
+            <div class="game-img" style="background-image: url('https://via.placeholder.com/200x200/222/gold?text=Baccarat');"></div>
+            <div class="game-info">
+                <span class="game-title">皇城百家樂</span>
+                <span class="game-desc">經典奢華，開創財富傳奇</span>
+            </div>
         </div>
     </main>
 
-    <nav class="tab-bar">
-        <span>🏠大廳</span>
-        <span>🎁優惠</span>
-        <span>💳儲值</span>
-        <span>👤會員</span>
-    </nav>
-
+    <script>
+        const sb = document.getElementById('sidebar');
+        const ov = document.getElementById('overlay');
+        document.getElementById('openMenu').onclick = () => { sb.classList.add('open'); ov.style.display='block'; };
+        ov.onclick = () => { sb.classList.remove('open'); ov.style.display='none'; };
+    </script>
 </body>
 </html>
