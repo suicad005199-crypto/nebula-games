@@ -1,1 +1,6 @@
-
+// admin.html 中的核心邏輯
+async function refreshAdminList() {
+    // 獲取包含下架的所有遊戲列表
+    const { data } = await supabase.from('games').select('*');
+    // 渲染成表格，並加上 <button> 切換 is_active 狀態
+}
