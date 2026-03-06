@@ -1,4 +1,3 @@
-// 檔案路徑：js/lobby.js
 import { api } from './api.js';
 
 async function initLobby() {
@@ -11,7 +10,7 @@ async function initLobby() {
     }
 
     grid.innerHTML = games.map(game => `
-        <div class="game-card" onclick="location.href='${game.game_url}'">
+        <div class="game-card" onclick="alert('進入遊戲：${game.name}')">
             <div class="game-img" style="background-image: url('./images/${game.image_path}')"></div>
             <div class="game-info">
                 <span class="game-title">${game.name}</span>
