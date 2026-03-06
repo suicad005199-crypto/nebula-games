@@ -1,6 +1,6 @@
 // 初始化 Supabase 客戶端
-const supabaseUrl = '你的_SUPABASE_URL';
-const supabaseKey = '你的_SUPABASE_ANON_KEY';
+const supabaseUrl = 'https://xvdgcnzvkkwplmgczulv.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2ZGdjbnp2a2t3cGxtZ2N6dWx2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjgxNDE2NywiZXhwIjoyMDg4MzkwMTY3fQ.jzty1GXdqDM6pQcUSe6ZmFIJ-blSGbRC0xOzY8fdUeM';
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 // 封裝常用功能
