@@ -1,6 +1,52 @@
-// admin.html 中的核心邏輯
-async function refreshAdminList() {
-    // 獲取包含下架的所有遊戲列表
-    const { data } = await supabase.from('games').select('*');
-    // 渲染成表格，並加上 <button> 切換 is_active 狀態
-}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>後台管理 - 星雲娛樂城</title>
+    <style>
+        body { background: #111; color: white; font-family: sans-serif; padding: 20px; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .admin-table th, .admin-table td { padding: 12px; border: 1px solid #333; text-align: left; }
+        .admin-table th { color: #fccd4d; }
+        .toggle-btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-on { background: #4CAF50; color: white; }
+        .btn-off { background: #f44336; color: white; }
+    </style>
+</head>
+<body>
+    <h2>🕹️ 遊戲上下架管理</h2>
+    <table class="admin-table">
+        <thead><tr><th>遊戲名稱</th><th>分類</th><th>狀態</th><th>操作</th></tr></thead>
+        <tbody id="admin-grid"></tbody>
+    </table>
+    <script type="module">
+        import { api } from './js/api.js';
+        
+        async function loadAdminGames() {
+            const tbody = document.getElementById('admin-grid');
+            const games = await api.getAllGamesAdmin();
+            tbody.innerHTML = games.map(g => `
+                <tr>
+                    <td>${g.name}</td>
+                    <td>${g.category}</td>
+                    <td style="color: ${g.is_active ? '#4CAF50' : '#f44336'}">${g.is_active ? '上架中' : '已下架'}</td>
+                    <td>
+                        <button class="toggle-btn ${g.is_active ? 'btn-off' : 'btn-on'}" 
+                                onclick="window.toggleGame('${g.id}', ${!g.is_active})">
+                            ${g.is_active ? '設為下架' : '設為上架'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        window.toggleGame = async (id, status) => {
+            await api.updateGameStatus(id, status);
+            loadAdminGames(); // 重新整理列表
+        };
+
+        loadAdminGames();
+    </script>
+</body>
+</html>
