@@ -1,163 +1,165 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Gemini 539 預測系統架構</title>
-    <style>
-        /* 定義黑橘主題色系 */
-        :root {
-            --bg-dark: #0d0d0d;
-            --bg-card: #1a1a1a;
-            --primary-orange: #ff7700;
-            --glow-orange: rgba(255, 119, 0, 0.4);
-            --text-main: #ffffff;
-            --text-sub: #b3b3b3;
-        }
-
-        /* 基礎排版與 iOS 適配 */
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .container {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* 頂部標題區塊 */
-        header {
-            text-align: center;
-            padding: 30px 0 20px 0;
-            border-bottom: 2px solid var(--primary-orange);
-            margin-bottom: 25px;
-        }
-
-        header h1 {
-            font-size: 24px;
-            margin: 0 0 10px 0;
-            color: var(--primary-orange);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            text-shadow: 0 0 10px var(--glow-orange);
-        }
-
-        header p {
-            font-size: 14px;
-            color: var(--text-sub);
-            margin: 0;
-        }
-
-        /* 策略卡片設計 */
-        .card {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--primary-orange);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-        }
-
-        .card h2 {
-            font-size: 18px;
-            margin: 0 0 15px 0;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-        }
-
-        .card h2 span {
-            background-color: var(--primary-orange);
-            color: var(--bg-dark);
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 14px;
-            margin-right: 10px;
-            font-weight: bold;
-        }
-
-        .card p, .card ul {
-            font-size: 15px;
-            color: var(--text-sub);
-            line-height: 1.6;
-        }
-
-        .card ul {
-            padding-left: 20px;
-            margin-top: 10px;
-            margin-bottom: 0;
-        }
-
-        .card li {
-            margin-bottom: 8px;
-        }
-
-        .highlight {
-            color: var(--primary-orange);
-            font-weight: bold;
-        }
-
-        /* 底部提示區塊 */
-        .footer-note {
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-sub);
-            margin-top: 30px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: rgba(255, 119, 0, 0.1);
-            border-radius: 8px;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Gemini Slot - Lock & Respin</title>
+<style>
+        body { background: #1a1a1a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        .slot-machine { background: #333; padding: 20px; border-radius: 15px; border: 5px solid #555; margin-top: 20px; }
+        .grid { display: flex; gap: 10px; background: #000; padding: 10px; border-radius: 8px; }
+        .reel { display: flex; flex-direction: column; gap: 10px; }
+        .cell { width: 80px; height: 80px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 40px; border-radius: 5px; border: 2px solid #444; transition: all 0.2s; }
+        .cell.locked { border-color: #f1c40f; box-shadow: 0 0 15px #f1c40f; }
+        .cell.win { background: #440000; border-color: #ff0000; animation: blink 0.5s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        .controls { margin-top: 20px; text-align: center; }
+        button { padding: 10px 30px; font-size: 18px; cursor: pointer; background: #e74c3c; color: white; border: none; border-radius: 5px; }
+        button:disabled { background: #7f8c8d; }
+        .stats { margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 300px; }
+        .status-msg { height: 30px; margin-top: 10px; color: #f1c40f; font-weight: bold; }
+</style>
 </head>
 <body>
-
-    <div class="container">
-        <header>
-            <h1>Gemini 系統邏輯 1.0</h1>
-            <p>今彩539 數據滾動回測架構</p>
-        </header>
-
-        <div class="card">
-            <h2><span>Step 1</span> 數據採集與特徵提取</h2>
-            <p>將彩券視為帶有雜訊的數據流，抓取前 30-50 期數據進行指標運算：</p>
-            <ul>
-                <li><span class="highlight">熱度頻率：</span>統計各號碼近期開出次數。</li>
-                <li><span class="highlight">遺漏值：</span>計算各號碼距離上次開出已間隔幾期。</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <h2><span>Step 2</span> 核心權重分配 (Weights)</h2>
-            <p>不單押冷熱號，透過多維度權重選取高勝率號碼：</p>
-            <ul>
-                <li><span class="highlight">趨勢跟隨 (30%)：</span>鎖定近 10 期內的強勢連莊號碼。</li>
-                <li><span class="highlight">均值回歸 (20%)：</span>挑選遺漏值達統計極限即將回檔的冷號。</li>
-                <li><span class="highlight">關聯分析 (20%)：</span>捕捉歷史上常「同出」的組合 (拖牌效應)。</li>
-                <li><span class="highlight">尾數偏好 (30%)：</span>鎖定近期剛啟動或極度活躍的「同尾數」。</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <h2><span>Step 3</span> 濾網校準 (Constraints)</h2>
-            <p>剔除 99% 不可能發生的極端組合，提升資金效率：</p>
-            <ul>
-                <li><span class="highlight">和值限制：</span>5 碼加總必須落在 <strong>75 ~ 125</strong> 之間。</li>
-                <li><span class="highlight">奇偶平衡：</span>強制奇偶比為 <strong>2:3</strong> 或 <strong>3:2</strong>。</li>
-                <li><span class="highlight">連號控制：</span>最多允許一組 2 連號，排除 3 連號以上。</li>
-            </ul>
-        </div>
-
-        <div class="footer-note">
-            ⚠️ 免責聲明：本模型為數學機率與歷史統計分析，旨在優化選號邏輯與過濾極端組合，不保證中獎。請理性評估，量力而為。
-        </div>
-    </div>
-
+ 
+    <h2>🎰 特色鎖定老虎機</h2>
+<div class="slot-machine">
+<div class="grid" id="grid">
+<div class="reel" id="reel-0">
+<div class="cell">?</div><div class="cell">?</div><div class="cell">?</div>
+</div>
+<div class="reel" id="reel-1">
+<div class="cell">?</div><div class="cell">?</div><div class="cell">?</div>
+</div>
+<div class="reel" id="reel-2">
+<div class="cell">?</div><div class="cell">?</div><div class="cell">?</div>
+</div>
+</div>
+</div>
+ 
+    <div class="status-msg" id="status">準備好贏錢了嗎？</div>
+ 
+    <div class="controls">
+<button id="spin-btn" onclick="handleSpin()">SPIN (10 PTS)</button>
+</div>
+ 
+    <div class="stats">
+<div>餘額: <span id="balance">1000</span></div>
+<div>最後得分: <span id="last-win">0</span></div>
+</div>
+ 
+<script>
+    // 原始代碼數據
+    const REELS_DATA = [
+        ["🍒","🍒","🍒","🍉","🍒","🔔","🍒","🍉","🍒","🎰","🍉","🍉","🍉","🍒","🔔","🍒","🍉","🍒","🎰","🍒","🍉","🍒","🔔","🔔","🔔","🍒","🍉","🍒","🎰","🍒","🍉","🍒","🔔","🍒","🎰","🎰","🎰","🍉","🍒","🔔","🍒","🍉","🍒","🍒","🍉","🍒","🔔","🍒","🍉","🍒","🎰","🍒","🍉","🍒","🔔","🍒","🍉","🍒","🍒","🍉","🔔","🍒","🍉","🍒"],
+        ["🍒","🍒","🍒","🍉","🍒","🔔","🍒","🍉","🍒","🎰","🍉","🍉","🍉","🔔","🔔","🔔","🍒","🍒","🍒","🍉","🍒","🎰","🍒","🍉","🍒","🔔","🍒","🍉","🎰","🎰","🎰","🍒","🍉","🍒","🔔","🍒","🍉","🍒","🍒","🍉","🔔","🍒","🍉","🍒","🎰","🍒","🍉","🍒","🔔","🍒","🍒","🍒","🍉","🍒","🔔","🍒","🍉","🍒","🎰","🍉","🍒"],
+        ["🎰","🎰","🎰","🍒","🍒","🍒","🍉","🍉","🍉","🔔","🔔","🔔","🍒","🍉","🍒","🎰","🍒","🍉","🍒","🔔","🍒","🍒","🍒","🍒","🍉","🍉","🍉","🍒","🔔","🍒","🍉","🍒","🎰","🍒","🍉","🍒","🔔","🔔","🔔","🍒","🍉","🍒","🎰","🎰","🎰","🍉","🍒","🔔","🍒","🍉","🍒","🍒","🍉","🍒","🔔","🍒","🍉","🍒","🎰","🍒","🍉","🍒","🔔"]
+    ];
+ 
+    const PAYOUT = { "🎰": 100, "🔔": 50, "🍉": 15, "🍒": 8 };
+    const PAYLINES = [
+        [1, 1, 1], // 中橫
+        [0, 0, 0], // 上橫
+        [2, 2, 2], // 下橫
+        [0, 1, 2], // 斜下
+        [2, 1, 0]  // 斜上
+    ];
+ 
+    let balance = 1000;
+    let isSpinning = false;
+ 
+    function getSpinResult() {
+        return REELS_DATA.map(strip => {
+            const stop = Math.floor(Math.random() * strip.length);
+            return [0, 1, 2].map(i => strip[(stop + i) % strip.length]);
+        });
+    }
+ 
+    function checkWin(grid) {
+        let win = 0;
+        let winningLines = [];
+        PAYLINES.forEach((line, index) => {
+            const s0 = grid[0][line[0]];
+            const s1 = grid[1][line[1]];
+            const s2 = grid[2][line[2]];
+            if (s0 === s1 && s1 === s2) {
+                win += PAYOUT[s0];
+                winningLines.push(index);
+            }
+        });
+        return { win, winningLines };
+    }
+ 
+    function isStacked(reelData) {
+        return reelData[0] === reelData[1] && reelData[1] === reelData[2];
+    }
+ 
+    function updateUI(grid, locks = [], winCells = []) {
+        grid.forEach((reel, rIdx) => {
+            const cells = document.getElementById(`reel-${rIdx}`).getElementsByClassName('cell');
+            reel.forEach((sym, cIdx) => {
+                cells[cIdx].innerText = sym;
+                cells[cIdx].className = 'cell';
+                if (locks.includes(rIdx)) cells[cIdx].classList.add('locked');
+            });
+        });
+    }
+ 
+    async function handleSpin() {
+        if (isSpinning || balance < 10) return;
+        isSpinning = true;
+        balance -= 10;
+        document.getElementById('balance').innerText = balance;
+        document.getElementById('spin-btn').disabled = true;
+        document.getElementById('status').innerText = "旋轉中...";
+ 
+        let grid = getSpinResult();
+        updateUI(grid);
+ 
+        let stackedIdx = [];
+        grid.forEach((reel, i) => { if (isStacked(reel)) stackedIdx.push(i); });
+ 
+        // Feature 邏輯
+        if (stackedIdx.length > 0) {
+            document.getElementById('status').innerText = "✨ 觸發鎖定 Respin！";
+            await new Promise(r => setTimeout(r, 800));
+            let locks = [stackedIdx[0]]; // 簡化邏輯：鎖定第一個滿軸
+            if (stackedIdx.length > 1) {
+                // 如果有多個，鎖定最高分的
+                locks = [stackedIdx.sort((a,b) => PAYOUT[grid[b][0]] - PAYOUT[grid[a][0]])[0]];
+            }
+ 
+            for (let i = 0; i < 10; i++) {
+                // 旋轉未鎖定的
+                grid.forEach((reel, idx) => {
+                    if (!locks.includes(idx)) grid[idx] = getSpinResult()[idx];
+                });
+                updateUI(grid, locks);
+                await new Promise(r => setTimeout(r, 500));
+ 
+                let result = checkWin(grid);
+                if (result.win > 0) break; // 中獎即停止
+ 
+                // 檢查是否有新的滿軸要鎖定
+                let newStacked = false;
+                grid.forEach((reel, idx) => {
+                    if (!locks.includes(idx) && isStacked(reel)) {
+                        locks.push(idx);
+                        newStacked = true;
+                    }
+                });
+                if (!newStacked && locks.length < 3) { /* 繼續轉 */ }
+                if (locks.length === 3) break;
+            }
+        }
+ 
+        let finalResult = checkWin(grid);
+        balance += finalResult.win;
+        document.getElementById('balance').innerText = balance;
+        document.getElementById('last-win').innerText = finalResult.win;
+        document.getElementById('status').innerText = finalResult.win > 0 ? `恭喜贏得 ${finalResult.win}！` : "可惜沒中獎";
+        isSpinning = false;
+        document.getElementById('spin-btn').disabled = false;
+    }
+</script>
 </body>
 </html>
