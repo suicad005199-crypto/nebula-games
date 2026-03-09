@@ -55,11 +55,25 @@
         /* 英雄公告區 */
         .hero { padding: 15px; }
         .promo-banner { 
-            width: 100%; height: 140px; border-radius: 16px;
-            background: linear-gradient(135deg, #1a1a1c, #252529);
-            border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
-        }
-        .promo-banner::after { content: "NEBULA EXCLUSIVE"; color: rgba(255,255,255,0.1); font-weight: 900; font-size: 20px; }
+         width: 100%; 
+         height: 140px; 
+         border-radius: 16px;
+         border: 1px solid var(--border); 
+         display: flex; 
+         align-items: center; 
+         justify-content: center;
+    
+         /* --- 修改重點：置入圖片 --- */
+         background-image: url('./images/banner.png'); /* 替換成你的圖片檔名 */
+         background-size: cover;      /* 讓圖片填滿整個框 */
+         background-position: center; /* 讓圖片置中 */
+         background-repeat: no-repeat;
+         }
+
+         /* 移除原本的偽元素文字 (如果你不想看到 NEBULA EXCLUSIVE) */
+         .promo-banner::after { 
+          display: none; 
+          }
 
         /* 遊戲網格 (優化：縮小卡片比例) */
         .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px 15px 20px; }
@@ -138,3 +152,4 @@
     </script>
 </body>
 </html>
+
