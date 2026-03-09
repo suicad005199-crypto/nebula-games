@@ -20,14 +20,15 @@
         .sidebar-header { padding: calc(env(safe-area-inset-top) + 40px) 20px 20px; background: linear-gradient(to right, rgba(252,205,77,0.15), transparent); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .sidebar-header h2 { margin: 0; font-size: 18px; color: var(--gold); }
         .sidebar-menu { list-style: none; padding: 0; margin: 0; }
-        .sidebar-menu li { padding: 18px 25px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 15px; cursor: pointer; display: flex; justify-content: space-between; }
+        .sidebar-menu li { padding: 18px 25px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 15px; cursor: pointer; display: flex; justify-content: space-between; transition: 0.2s; }
         .sidebar-menu li:active { background: rgba(252,205,77,0.1); color: var(--gold); }
+        
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); opacity: 0; visibility: hidden; z-index: 150; transition: 0.3s; }
         .overlay.active { opacity: 1; visibility: visible; }
 
-        /* 遊戲卡片 (修復過大問題) */
+        /* 遊戲卡片 */
         .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px 15px; }
-        .game-card { background: var(--card); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); transition: 0.15s; display: flex; flex-direction: column; }
+        .game-card { background: var(--card); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); transition: 0.15s; display: flex; flex-direction: column; cursor: pointer; }
         .game-card:active { transform: scale(0.95); border-color: var(--gold); }
         .game-img { width: 100%; aspect-ratio: 1 / 1; background-color: #222; background-size: cover; background-position: center; }
         .game-info { padding: 12px 10px; text-align: center; }
@@ -41,11 +42,11 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header"><h2>星雲娛樂城</h2></div>
         <ul class="sidebar-menu">
-            <li onclick="toggleMenu()"><span>🏠 全部遊戲</span></li>
-            <li onclick="toggleMenu()"><span>🃏 棋牌中心</span></li>
-            <li onclick="toggleMenu()"><span>🎰 老虎機</span></li>
-            <li onclick="toggleMenu()"><span>🎰 限定</span></li>
-            <li onclick="toggleMenu()"><span>🎰 真人LIVE</span></li>
+            <li onclick="filterCategory('all')"><span>🏠 全部遊戲</span></li>
+            <li onclick="filterCategory('棋牌')"><span>🃏 棋牌中心</span></li>
+            <li onclick="filterCategory('老虎機')"><span>🎰 老虎機</span></li>
+            <li onclick="filterCategory('限定')"><span>🔥 限定遊戲</span></li>
+            <li onclick="filterCategory('LIVE')"><span>📺 真人 LIVE</span></li>
         </ul>
     </nav>
 
@@ -56,16 +57,19 @@
     </header>
 
     <main class="game-grid" id="game-grid">
-        <p style="text-align: center; grid-column: span 2; color: #666;">載入中...</p>
+        <p style="text-align: center; grid-column: span 2; color: #666; padding-top: 50px;">載入中...</p>
     </main>
 
     <script type="module" src="./js/lobby.js"></script>
     <script>
+        // 控制側邊欄開關
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        function toggleMenu() { sidebar.classList.toggle('open'); overlay.classList.toggle('active'); }
+        function toggleMenu() { 
+            sidebar.classList.toggle('open'); 
+            overlay.classList.toggle('active'); 
+        }
         overlay.onclick = toggleMenu;
     </script>
 </body>
 </html>
-
