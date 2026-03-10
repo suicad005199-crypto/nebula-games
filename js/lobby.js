@@ -4,17 +4,17 @@ import { auth } from './auth.js';
 let allGames = [];
 let filteredGames = [];
 let currentPage = 1;
-const PAGE_SIZE = 4; // 限制單頁最多顯示 4 款
+const PAGE_SIZE = 4;
 
 /**
  * 初始化載入資料
  */
 async function initLobby() {
-    updateUserUI(); // 優先檢查會員狀態
+    updateUserUI();
 
     try {
         allGames = await api.getActiveGames();
-        filteredGames = [...allGames]; // 初始顯示全部 (對應首頁 TOP 4)
+        filteredGames = [...allGames];
         renderCurrentPage();
     } catch (err) {
         console.error("載入失敗:", err);
@@ -72,19 +72,31 @@ function renderCurrentPage() {
     const end = start + PAGE_SIZE;
     const itemsToShow = filteredGames.slice(start, end);
 
-    grid.innerHTML = itemsToShow.map(game => `
-        <div class="game-card" onclick="handleGameClick('${game.target_path}')">
-            <div class="game-img-wrapper">
-                <div class="game-img" style="background-image: url('./images/${game.image_path}')"
-                     onerror="this.style.backgroundImage='url(./images/default-game.jpg)'"></div>
-                <div class="game-badge" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); padding:2px 6px; border-radius:4px; font-size:10px; color:var(--gold); border:1px solid var(--gold);">${game.category}</div>
+    grid.innerHTML = itemsToShow.map(game => {
+        // 判斷是否為維護狀態
+        const isMaintenance = !game.target_path || game.target_path === 'null' || game.target_path === 'undefined' || game.target_path === '#';
+        
+        return `
+            <div class="game-card ${isMaintenance ? 'maintenance' : ''}" onclick="handleGameClick('${game.target_path}')">
+                <div class="game-img-wrapper">
+                    <div class="game-img" style="background-image: url('./images/${game.image_path}')"
+                         onerror="this.style.backgroundImage='url(./images/default-game.jpg)'"></div>
+                    <div class="game-badge" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); padding:2px 6px; border-radius:4px; font-size:10px; color:var(--gold); border:1px solid var(--gold); z-index:11;">${game.category}</div>
+                    
+                    ${isMaintenance ? `
+                    <div class="maintenance-overlay">
+                        <div class="maintenance-icon">🛠️</div>
+                        <div class="maintenance-text">該遊戲館維護中<br>敬請期待！</div>
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="game-info">
+                    <div class="game-title">${game.name}</div>
+                    <div class="game-desc">${isMaintenance ? '維護中' : '立即開賽 | 試玩可用'}</div>
+                </div>
             </div>
-            <div class="game-info">
-                <div class="game-title">${game.name}</div>
-                <div class="game-desc">${game.target_path && game.target_path !== '#' ? '立即開賽' : '敬請期待'}</div>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 
     if (pagination) {
         if (filteredGames.length > PAGE_SIZE) {
@@ -102,21 +114,17 @@ function renderCurrentPage() {
  * 點擊遊戲處理 (維護判斷 + 試玩邏輯)
  */
 window.handleGameClick = async (url) => {
-    // 1. 檢查 target_path 是否有效
     if (!url || url === 'null' || url === 'undefined' || url === '#') {
         alert('🛠️ 該遊戲館維護中，敬請期待！');
         return;
     }
 
-    // 2. 獲取會員狀態
     const user = await auth.checkUser();
     
     if (!user) {
-        // 未登入：進入試玩模式
         alert('您目前以「試玩模式」進入，系統將不會紀錄您的遊戲數據。');
         location.href = url;
     } else {
-        // 已登入：正常進入
         location.href = url;
     }
 };
@@ -136,7 +144,7 @@ window.changePage = (step) => {
 window.filterCategory = (cat, el) => {
     const titleEl = document.getElementById('display-title');
     document.querySelectorAll('.sidebar-menu li').forEach(item => item.classList.remove('active'));
-    if (el) el.classList.add('active');
+    if (el && typeof el !== 'string') el.classList.add('active');
 
     if (titleEl) {
         titleEl.innerText = cat === 'all' ? '熱門推薦 TOP 4' : `${cat}系列`;
