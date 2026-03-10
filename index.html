@@ -7,135 +7,88 @@
     <style>
         :root { 
             --gold: #fccd4d;
-            --gold-linear: linear-gradient(135deg, #fccd4d 0%, #fb9a32 100%);
+            --gold-grad: linear-gradient(135deg, #fccd4d 0%, #fb9a32 100%);
             --bg: #0b0b0d; 
             --card: #161618;
-            --glass: rgba(255, 255, 255, 0.03);
             --border: rgba(255, 255, 255, 0.08);
             --nav-h: 60px;
         }
         
         body { 
             margin: 0; background: var(--bg); color: white; 
-            font-family: 'PingFang TC', 'Inter', sans-serif; 
-            overflow-x: hidden; -webkit-tap-highlight-color: transparent;
+            font-family: 'PingFang TC', sans-serif; overflow-x: hidden;
         }
 
-        /* 導航列：加入用戶資訊空間 */
+        /* 導航列 */
         .navbar { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: env(safe-area-inset-top) 15px 10px; 
             background: rgba(11, 11, 13, 0.95); backdrop-filter: blur(20px); 
             position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border);
         }
-        .logo { font-size: 16px; font-weight: 900; color: var(--gold); letter-spacing: 1px; }
-        
-        .user-status { display: flex; align-items: center; gap: 10px; }
-        .balance-box { 
-            background: var(--glass); padding: 4px 12px; border-radius: 20px; 
-            border: 1px solid var(--border); font-size: 13px; color: var(--gold);
-        }
+        .logo { font-size: 18px; font-weight: 900; color: var(--gold); letter-spacing: 1px; }
 
-        /* 側邊選單 */
-        .sidebar { 
-            position: fixed; top: 0; left: -100%; width: 280px; height: 100%; 
-            background: #0f0f11; z-index: 1001; transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-            border-right: 1px solid var(--border); display: flex; flex-direction: column;
-        }
-        .sidebar.open { left: 0; }
-        .sidebar-header { padding: 60px 25px 30px; border-bottom: 1px solid var(--border); }
-        .sidebar-menu { list-style: none; padding: 10px 0; margin: 0; flex-grow: 1; }
-        .sidebar-menu li { 
-            padding: 18px 25px; font-size: 15px; color: #aaa; 
-            display: flex; align-items: center; gap: 12px; transition: 0.2s;
-        }
-        .sidebar-menu li.active { background: var(--glass); color: var(--gold); font-weight: bold; }
-
-        /* 公告跑馬燈 */
-        .marquee-container {
-            background: #1a1a1d; height: 30px; display: flex; align-items: center;
-            padding: 0 15px; font-size: 12px; color: #ccc; border-bottom: 1px solid var(--border);
-        }
-        .marquee-label { color: var(--gold); font-weight: bold; margin-right: 10px; white-space: nowrap; }
-        .marquee-content { flex: 1; overflow: hidden; white-space: nowrap; }
-        .marquee-text { display: inline-block; animation: scroll 20s linear infinite; padding-left: 100%; }
-        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-
-        /* 輪播區 */
-        .hero { padding: 12px 15px; }
+        /* 1. BANNER 區 */
+        .hero { padding: 10px 15px; }
         .promo-banner { 
-            width: 100%; height: 160px; border-radius: 12px; overflow: hidden; 
+            width: 100%; height: 150px; border-radius: 12px; overflow: hidden; 
             position: relative; border: 1px solid var(--border);
         }
         .banner-slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: 0.8s; }
         .banner-slide.active { opacity: 1; }
         .banner-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
-        .dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.3s; }
+        .dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.3); }
         .dot.active { background: var(--gold); width: 14px; border-radius: 10px; }
 
-        /* 遊戲網格：優化卡片質感 */
-        .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 15px 100px; }
-        .game-card { 
-            background: var(--card); border-radius: 12px; overflow: hidden; 
-            border: 1px solid var(--border); transition: 0.3s;
+        /* 2. 公告區 */
+        .marquee-bar {
+            background: #1a1a1d; height: 32px; display: flex; align-items: center;
+            padding: 0 15px; font-size: 12px; border-bottom: 1px solid var(--border);
         }
-        .game-card:active { transform: scale(0.96); filter: brightness(1.2); border-color: var(--gold); }
-        .game-img-wrapper { position: relative; aspect-ratio: 1/1; overflow: hidden; }
-        .game-img { width: 100%; height: 100%; background-size: cover; background-position: center; transition: 0.5s; }
-        .game-badge { 
-            position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); 
-            padding: 2px 8px; border-radius: 4px; font-size: 10px; color: var(--gold); backdrop-filter: blur(4px);
-        }
-        .game-info { padding: 10px; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.5)); }
-        .game-title { font-weight: 600; font-size: 13px; color: #fff; margin-bottom: 2px; }
-        .game-desc { color: #666; font-size: 10px; }
+        .marquee-label { color: var(--gold); font-weight: bold; margin-right: 10px; white-space: nowrap; }
+        .marquee-content { flex: 1; overflow: hidden; white-space: nowrap; }
+        .marquee-text { display: inline-block; animation: scroll 15s linear infinite; }
+        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* 底部導航 (Tab Bar) */
+        /* 3. 遊戲區標題 */
+        .section-header { 
+            padding: 15px 15px 5px; display: flex; align-items: center; gap: 8px;
+        }
+        .section-title { font-size: 14px; font-weight: bold; color: var(--gold); margin: 0; }
+        .section-line { flex: 1; height: 1px; background: var(--border); }
+
+        /* 4. 遊戲網格 (4個一頁) */
+        .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 15px 20px; }
+        .game-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        .game-img-wrapper { position: relative; aspect-ratio: 4/3; }
+        .game-img { width: 100%; height: 100%; background-size: cover; background-position: center; }
+        .game-info { padding: 8px 10px; }
+        .game-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+        .game-desc { color: #666; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* 分頁器 */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; padding-bottom: 100px; }
+        .page-btn { background: var(--glass); border: 1px solid var(--border); color: #fff; padding: 6px 15px; border-radius: 20px; font-size: 12px; }
+        .page-btn:disabled { opacity: 0.3; }
+
+        /* 底部導航 */
         .tab-bar {
             position: fixed; bottom: 0; width: 100%; height: var(--nav-h);
-            background: rgba(15, 15, 17, 0.98); backdrop-filter: blur(25px);
-            border-top: 1px solid var(--border); display: flex; align-items: center;
-            padding-bottom: env(safe-area-inset-bottom); z-index: 1000;
+            background: rgba(15, 15, 17, 0.98); backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border); display: flex; z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
         }
-        .tab-item {
-            flex: 1; display: flex; flex-direction: column; align-items: center;
-            color: #888; border: none; background: none; transition: 0.2s;
-        }
+        .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; border: none; background: none; font-size: 10px; }
         .tab-item.active { color: var(--gold); }
-        .tab-item i { font-size: 20px; margin-bottom: 3px; font-style: normal; }
-        .tab-item span { font-size: 11px; font-weight: 500; }
-
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); opacity: 0; visibility: hidden; z-index: 1000; transition: 0.3s; }
-        .overlay.active { opacity: 1; visibility: visible; }
+        .tab-item i { font-size: 20px; margin-bottom: 2px; font-style: normal; }
     </style>
 </head>
 <body>
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-    
-    <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header"><h2>服務選單</h2></div>
-        <ul class="sidebar-menu">
-            <li onclick="filterCategory('all', this)" class="active"><i>🏠</i> 全部遊戲</li>
-            <li onclick="filterCategory('棋牌', this)"><i>🃏</i> 棋牌中心</li>
-            <li onclick="filterCategory('老虎機', this)"><i>🎰</i> 熱門老虎機</li>
-            <li onclick="filterCategory('LIVE', this)"><i>📺</i> 真人 LIVE</li>
-        </ul>
-    </nav>
 
     <header class="navbar">
-        <div class="logo">NEBULA</div>
-        <div class="user-status">
-            <div class="balance-box">NT$ 0.00</div>
-            <button class="login-btn" style="background:var(--gold-linear); border:none; border-radius:20px; padding:6px 16px; font-weight:bold; font-size:12px; color:#000;">登入</button>
-        </div>
+        <div class="logo">NEBULA CASINO</div>
+        <button class="login-btn" style="background:var(--gold-grad); border:none; border-radius:20px; padding:6px 16px; font-weight:bold; font-size:12px;">登入</button>
     </header>
-
-    <div class="marquee-container">
-        <span class="marquee-label">公告</span>
-        <div class="marquee-content">
-            <span class="marquee-text">歡迎光臨星雲娛樂城！全站遊戲最高返水 0.8%，點擊客服中心領取首儲禮包。</span>
-        </div>
-    </div>
 
     <section class="hero">
         <div class="promo-banner" id="promo-banner">
@@ -145,65 +98,34 @@
         </div>
     </section>
 
-    <main class="game-grid" id="game-grid">
-        <p style="text-align: center; grid-column: span 2; padding: 40px; color: #444;">載入中...</p>
-    </main>
+    <div class="marquee-bar">
+        <span class="marquee-label">NOTICE</span>
+        <div class="marquee-content">
+            <span class="marquee-text">歡迎來到星雲娛樂城，首儲即送 100% 禮金！全站遊戲公平公正，祝您好運。</span>
+        </div>
+    </div>
 
-    <div class="pagination" id="pagination" style="display: none; justify-content: center; gap: 20px; padding-bottom: 120px;">
-        <button id="prev-btn" onclick="changePage(-1)" style="background:var(--glass); border:1px solid var(--border); color:#fff; border-radius:20px; padding:8px 20px;">◀</button>
-        <span id="page-num" style="line-height: 40px; color: var(--gold);">1</span>
-        <button id="next-btn" onclick="changePage(1)" style="background:var(--glass); border:1px solid var(--border); color:#fff; border-radius:20px; padding:8px 20px;">▶</button>
+    <div class="section-header">
+        <h3 class="section-title" id="display-title">熱門推薦 TOP 4</h3>
+        <div class="section-line"></div>
+    </div>
+
+    <main class="game-grid" id="game-grid">
+        </main>
+
+    <div class="pagination" id="pagination">
+        <button class="page-btn" id="prev-btn" onclick="changePage(-1)">PREV</button>
+        <span id="page-num" style="color: var(--gold); font-weight: bold;">1</span>
+        <button class="page-btn" id="next-btn" onclick="changePage(1)">NEXT</button>
     </div>
 
     <nav class="tab-bar">
-        <button class="tab-item active" onclick="setActiveTab(this)"><i>🏠</i><span>大廳</span></button>
-        <button class="tab-item" onclick="setActiveTab(this)"><i>💰</i><span>儲值</span></button>
-        <button class="tab-item" onclick="toggleMenu()"><i>☰</i><span>分類</span></button>
-        <button class="tab-item" onclick="setActiveTab(this)"><i>🎧</i><span>客服</span></button>
-        <button class="tab-item" onclick="setActiveTab(this)"><i>👤</i><span>我的</span></button>
+        <button class="tab-item active"><i>🏠</i><span>大廳</span></button>
+        <button class="tab-item"><i>💰</i><span>儲值</span></button>
+        <button class="tab-item"><i>🎧</i><span>客服</span></button>
+        <button class="tab-item"><i>👤</i><span>會員</span></button>
     </nav>
 
     <script type="module" src="./js/lobby.js"></script>
-    <script>
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-        window.toggleMenu = toggleMenu;
-
-        function setActiveTab(el) {
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-            if(el.innerText.includes('分類')) return; // 點擊分類不關閉選單，因為 toggleMenu 會處理
-            document.getElementById('sidebar').classList.remove('open');
-            document.getElementById('overlay').classList.remove('active');
-        }
-
-        // Banner 邏輯保持原樣，僅優化啟動
-        function initBanner() {
-            const banner = document.getElementById('promo-banner');
-            const slides = document.querySelectorAll('.banner-slide');
-            const dotsContainer = document.getElementById('banner-dots');
-            let currentSlide = 0, timer = null;
-            
-            if (slides.length <= 1) return;
-            slides.forEach((_, i) => {
-                const dot = document.createElement('div');
-                dot.className = `dot ${i === 0 ? 'active' : ''}`;
-                dotsContainer.appendChild(dot);
-            });
-            
-            const dots = document.querySelectorAll('.dot');
-            function goToSlide(n) {
-                slides[currentSlide].classList.remove('active');
-                dots[currentSlide].classList.remove('active');
-                currentSlide = (n + slides.length) % slides.length;
-                slides[currentSlide].classList.add('active');
-                dots[currentSlide].classList.add('active');
-            }
-            timer = setInterval(() => goToSlide(currentSlide + 1), 4000);
-        }
-        document.addEventListener('DOMContentLoaded', initBanner);
-    </script>
 </body>
 </html>
