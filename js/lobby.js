@@ -18,7 +18,8 @@ async function initLobby() {
         renderCurrentPage();
     } catch (err) {
         console.error("載入失敗:", err);
-        document.getElementById('game-grid').innerHTML = '<p style="color: #ff4436; text-align: center; grid-column: span 2; padding: 20px;">連線異常，請重整</p>';
+        const grid = document.getElementById('game-grid');
+        if (grid) grid.innerHTML = '<p style="color: #ff4436; text-align: center; grid-column: span 2; padding: 20px;">連線異常，請重整</p>';
     }
 }
 
@@ -52,7 +53,7 @@ async function updateUserUI() {
 }
 
 /**
- * 依據當前頁碼渲染卡片與更新分頁按鈕狀態
+ * 依據當前頁碼渲染卡片
  */
 function renderCurrentPage() {
     const grid = document.getElementById('game-grid');
@@ -72,19 +73,19 @@ function renderCurrentPage() {
     const itemsToShow = filteredGames.slice(start, end);
 
     grid.innerHTML = itemsToShow.map(game => `
-        <div class="game-card" onclick="handleGameClick('${game.game_url}')">
+        <div class="game-card" onclick="handleGameClick('${game.target_path}')">
             <div class="game-img-wrapper">
                 <div class="game-img" style="background-image: url('./images/${game.image_path}')"
                      onerror="this.style.backgroundImage='url(./images/default-game.jpg)'"></div>
+                <div class="game-badge" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); padding:2px 6px; border-radius:4px; font-size:10px; color:var(--gold); border:1px solid var(--gold);">${game.category}</div>
             </div>
             <div class="game-info">
                 <div class="game-title">${game.name}</div>
-                <div class="game-desc">${game.category} | 立即開賽</div>
+                <div class="game-desc">${game.target_path && game.target_path !== '#' ? '立即開賽' : '敬請期待'}</div>
             </div>
         </div>
     `).join('');
 
-    // 控制分頁器顯示
     if (pagination) {
         if (filteredGames.length > PAGE_SIZE) {
             pagination.style.display = 'flex';
@@ -98,14 +99,25 @@ function renderCurrentPage() {
 }
 
 /**
- * 點擊遊戲處理 (檢查登入與 Gmail 綁定)
+ * 點擊遊戲處理 (維護判斷 + 試玩邏輯)
  */
 window.handleGameClick = async (url) => {
+    // 1. 檢查 target_path 是否有效
+    if (!url || url === 'null' || url === 'undefined' || url === '#') {
+        alert('🛠️ 該遊戲館維護中，敬請期待！');
+        return;
+    }
+
+    // 2. 獲取會員狀態
     const user = await auth.checkUser();
+    
     if (!user) {
-        alert('請先進行 Gmail 綁定或以訪客身分登入即可開始遊玩'); // 優先使用 Gmail 與訪客綁定
+        // 未登入：進入試玩模式
+        alert('您目前以「試玩模式」進入，系統將不會紀錄您的遊戲數據。');
+        location.href = url;
     } else {
-        location.href = url || '#';
+        // 已登入：正常進入
+        location.href = url;
     }
 };
 
@@ -115,35 +127,29 @@ window.handleGameClick = async (url) => {
 window.changePage = (step) => {
     currentPage += step;
     renderCurrentPage();
-    window.scrollTo({ top: 250, behavior: 'smooth' }); // 切換後捲動至遊戲區起點
+    window.scrollTo({ top: 200, behavior: 'smooth' }); 
 };
 
 /**
- * 全域過濾函數 (整合分頁重置與動態標題)
+ * 全域過濾函數
  */
 window.filterCategory = (cat, el) => {
     const titleEl = document.getElementById('display-title');
-    
-    // 更新側邊欄狀態
     document.querySelectorAll('.sidebar-menu li').forEach(item => item.classList.remove('active'));
     if (el) el.classList.add('active');
 
-    // 動態更新大廳標題
     if (titleEl) {
         titleEl.innerText = cat === 'all' ? '熱門推薦 TOP 4' : `${cat}系列`;
     }
 
-    // 執行過濾並重置回第 1 頁
     filteredGames = cat === 'all' ? allGames : allGames.filter(g => g.category === cat);
     currentPage = 1; 
     renderCurrentPage();
 
-    // 關閉側邊欄
     if (document.getElementById('sidebar')?.classList.contains('open') && window.toggleMenu) {
         window.toggleMenu();
     }
-    
-    window.scrollTo({ top: 250, behavior: 'smooth' });
+    window.scrollTo({ top: 200, behavior: 'smooth' });
 };
 
 document.addEventListener('DOMContentLoaded', initLobby);
