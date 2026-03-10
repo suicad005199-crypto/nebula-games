@@ -29,40 +29,32 @@
         }
         .logo { font-size: 18px; font-weight: 900; color: var(--gold); letter-spacing: 1px; }
 
-        /* 1. BANNER 區 */
-        .hero { padding: 10px 15px; }
-        /* 1. BANNER 區高度優化 */
+        /* 1. BANNER 區高度優化 (縮減高度防止遮擋) */
+        .hero { padding: 8px 15px; }
         .promo-banner { 
-         width: 100%; 
-         height: 110px; /* 從 150px 調降，增加遊戲區可視度 */
-         border-radius: 12px; 
-         overflow: hidden; 
-         position: relative; 
-         border: 1px solid var(--border);
-         }
+            width: 100%; height: 110px; border-radius: 12px; overflow: hidden; 
+            position: relative; border: 1px solid var(--border);
+        }
+        .banner-slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: 0.8s; }
+        .banner-slide.active { opacity: 1; }
 
-        /* 額外優化：讓公告欄稍微扁平一點 */
+        /* 2. 公告區優化 (稍微縮小高度) */
         .marquee-bar {
-         background: #1a1a1d; 
-         height: 28px; /* 從 32px 調降 */
-         display: flex; 
-         align-items: center;
-         padding: 0 15px; 
-         font-size: 11px; 
-         border-bottom: 1px solid var(--border);
-         }
+            background: #1a1a1d; height: 28px; display: flex; align-items: center;
+            padding: 0 15px; font-size: 11px; border-bottom: 1px solid var(--border);
+        }
         .marquee-label { color: var(--gold); font-weight: bold; margin-right: 10px; white-space: nowrap; }
         .marquee-content { flex: 1; overflow: hidden; white-space: nowrap; }
         .marquee-text { display: inline-block; animation: scroll 15s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         /* 3. 遊戲區標題 */
-        .section-header { padding: 15px 15px 5px; display: flex; align-items: center; gap: 8px; }
+        .section-header { padding: 12px 15px 5px; display: flex; align-items: center; gap: 8px; }
         .section-title { font-size: 14px; font-weight: bold; color: var(--gold); margin: 0; }
         .section-line { flex: 1; height: 1px; background: var(--border); }
 
         /* 4. 遊戲網格 */
-        .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 15px 20px; min-height: 300px; }
+        .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px 15px 20px; min-height: 200px; }
         .game-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
         .game-img-wrapper { position: relative; aspect-ratio: 4/3; }
         .game-img { width: 100%; height: 100%; background-size: cover; background-position: center; }
@@ -70,12 +62,16 @@
         .game-title { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
         .game-desc { color: #666; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* 分頁器 */
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; padding-bottom: 100px; }
+        /* 分頁器 (增加底部安全間隔，確保不被 Tab Bar 遮擋) */
+        .pagination { 
+            display: flex; justify-content: center; align-items: center; gap: 15px; 
+            padding-top: 10px;
+            padding-bottom: calc(var(--nav-h) + 30px + env(safe-area-inset-bottom)); 
+        }
         .page-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 6px 15px; border-radius: 20px; font-size: 12px; }
         .page-btn:disabled { opacity: 0.3; }
 
-        /* 側邊欄 (選單) */
+        /* 側邊欄與遮罩 */
         .sidebar {
             position: fixed; top: 0; left: calc(-1 * var(--sidebar-w)); width: var(--sidebar-w); height: 100%;
             background: var(--bg); z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -84,18 +80,12 @@
         .sidebar.open { left: 0; }
         .sidebar-header { padding: 20px; font-size: 18px; font-weight: bold; color: var(--gold); border-bottom: 1px solid var(--border); }
         .sidebar-menu { list-style: none; padding: 10px 0; margin: 0; }
-        .sidebar-menu li { padding: 15px 25px; display: flex; align-items: center; gap: 12px; color: #ccc; font-size: 15px; transition: 0.2s; }
-        .sidebar-menu li i { font-style: normal; font-size: 18px; }
+        .sidebar-menu li { padding: 15px 25px; display: flex; align-items: center; gap: 12px; color: #ccc; font-size: 15px; cursor: pointer; }
         .sidebar-menu li.active { background: rgba(252, 205, 77, 0.1); color: var(--gold); font-weight: bold; }
-
-        /* 遮罩 */
-        .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-            z-index: 1500; opacity: 0; visibility: hidden; transition: 0.3s;
-        }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1500; opacity: 0; visibility: hidden; transition: 0.3s; }
         .overlay.active { opacity: 1; visibility: visible; }
 
-        /* 底部導航 (排序優化) */
+        /* 底部 Tab Bar (排序調整) */
         .tab-bar {
             position: fixed; bottom: 0; width: 100%; height: var(--nav-h);
             background: rgba(15, 15, 17, 0.98); backdrop-filter: blur(20px);
@@ -145,8 +135,7 @@
         <div class="section-line"></div>
     </div>
 
-    <main class="game-grid" id="game-grid">
-        </main>
+    <main class="game-grid" id="game-grid"></main>
 
     <div class="pagination" id="pagination" style="display: none;">
         <button class="page-btn" id="prev-btn" onclick="changePage(-1)">PREV</button>
@@ -165,27 +154,21 @@
     <script type="module">
         import { auth } from './js/auth.js';
 
-        // 1. 側邊欄開關邏輯
         window.toggleMenu = () => {
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('overlay').classList.toggle('active');
         };
 
-        // 2. Tab Bar 點擊處理
         window.handleTabClick = (el, type) => {
-            // 排除選單按鈕的 active 狀態切換，因為選單是彈出層
             document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
-
-            if (type === 'lobby') {
-                // 如果在大廳，重置分類為全部
-                if (window.filterCategory) window.filterCategory('all');
-            } else {
+            if (type === 'lobby' && window.filterCategory) {
+                window.filterCategory('all');
+            } else if (type !== 'lobby') {
                 alert(`${el.innerText} 功能建置中...`);
             }
         };
 
-        // 3. 簡單 Banner 切換
         function initBanner() {
             const slides = document.querySelectorAll('.banner-slide');
             let current = 0;
@@ -201,5 +184,3 @@
     <script type="module" src="./js/lobby.js"></script>
 </body>
 </html>
-
-
